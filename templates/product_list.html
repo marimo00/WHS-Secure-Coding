@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}상품 목록{% endblock %}
+{% block content %}
+<h2>상품 목록</h2>
+
+<div class="product-list">
+  {% if products %}
+    {% for product in products %}
+      <div class="product-item">
+        <h3><a href="{{ url_for('view_product', product_id=product.id) }}">{{ product.title }}</a></h3>
+        <p class="price">가격: {{ product.price }}원</p>
+        <p class="seller">판매자: <a href="{{ url_for('view_user_profile', username=product.seller_name) }}">{{ product.seller_name }}</a></p>
+        <p class="description">{{ product.description }}</p>
+        <p class="date">등록일: {{ product.created_at }}</p>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>등록된 상품이 없습니다.</p>
+  {% endif %}
+</div>
+
+<style>
+  .product-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+  }
+  .product-item {
+    border: 1px solid #e0e0e0;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .product-item h3 {
+    margin: 0 0 10px 0;
+  }
+  .product-item h3 a {
+    color: #333;
+    text-decoration: none;
+  }
+  .product-item h3 a:hover {
+    color: #4CAF50;
+  }
+  .price {
+    font-weight: bold;
+    color: #4CAF50;
+    margin: 10px 0;
+  }
+  .seller {
+    margin: 10px 0;
+  }
+  .seller a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  .seller a:hover {
+    text-decoration: underline;
+  }
+  .description {
+    color: #666;
+    margin: 10px 0;
+  }
+  .date {
+    color: #999;
+    font-size: 0.9em;
+    margin: 10px 0 0 0;
+  }
+</style>
+{% endblock %} 

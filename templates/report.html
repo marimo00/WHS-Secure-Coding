@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}신고하기{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="mb-0">신고하기</h2>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('report') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="mb-3">
+                    <label for="target_type" class="form-label">신고 대상 유형</label>
+                    <select class="form-select" id="target_type" name="target_type" required>
+                        <option value="">선택하세요</option>
+                        <option value="user">사용자</option>
+                        <option value="product">상품</option>
+                    </select>
+                </div>
+
+                <div class="mb-3" id="usernameField" style="display: none;">
+                    <label for="target_username" class="form-label">신고할 사용자명</label>
+                    <input type="text" class="form-control" id="target_username" name="target_username">
+                </div>
+
+                <div class="mb-3" id="productIdField" style="display: none;">
+                    <label for="target_id" class="form-label">상품 ID</label>
+                    <input type="text" class="form-control" id="target_id" name="target_id">
+                </div>
+
+                <div class="mb-3">
+                    <label for="reason" class="form-label">신고 사유</label>
+                    <textarea class="form-control" id="reason" name="reason" rows="4" required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-custom btn-custom-danger">
+                    <i class="fas fa-exclamation-triangle"></i>신고하기
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('target_type').addEventListener('change', function() {
+    const usernameField = document.getElementById('usernameField');
+    const productIdField = document.getElementById('productIdField');
+    
+    if (this.value === 'user') {
+        usernameField.style.display = 'block';
+        productIdField.style.display = 'none';
+        document.getElementById('target_username').required = true;
+        document.getElementById('target_id').required = false;
+    } else if (this.value === 'product') {
+        usernameField.style.display = 'none';
+        productIdField.style.display = 'block';
+        document.getElementById('target_username').required = false;
+        document.getElementById('target_id').required = true;
+    } else {
+        usernameField.style.display = 'none';
+        productIdField.style.display = 'none';
+        document.getElementById('target_username').required = false;
+        document.getElementById('target_id').required = false;
+    }
+});
+</script>
+{% endblock %}

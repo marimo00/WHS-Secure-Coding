@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}{{ user.username }}의 프로필{% endblock %}
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+  <h2>{{ user.username }}의 프로필</h2>
+  
+  <div style="background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px;">
+    <h3>소개</h3>
+    <p>{{ user.bio or '소개글이 없습니다.' }}</p>
+  </div>
+
+  <h3>판매 중인 상품</h3>
+  {% if products %}
+    <ul style="list-style: none; padding: 0;">
+      {% for product in products %}
+        <li style="background-color: #fff; padding: 15px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+          <a href="{{ url_for('view_product', product_id=product.id) }}" style="text-decoration: none; color: #333;">
+            <h4 style="margin: 0 0 10px 0;">{{ product.title }}</h4>
+            <p style="margin: 0; color: #666;">가격: {{ product.price }}원</p>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>판매 중인 상품이 없습니다.</p>
+  {% endif %}
+</div>
+{% endblock %} 

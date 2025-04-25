@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block title %}대시보드{% endblock %}
+{% block content %}
+<h1>대시보드</h1>
+<p>환영합니다, {{ user.username }}님!</p>
+<h2>최근 상품</h2>
+<ul>
+    {% for product in recent_products %}
+    <li>
+        <a href="{{ url_for('view_product', product_id=product.id) }}">{{ product.title }}</a>
+        <p>{{ product.description }}</p>
+        <p>가격: {{ product.price }}</p>
+    </li>
+    {% endfor %}
+</ul>
+
+<h3>최근 등록된 상품</h3>
+{% if products %}
+  <ul>
+    {% for product in products %}
+      <li>
+        <a href="{{ url_for('view_product', product_id=product.id) }}">{{ product.title }}</a>
+        - 가격: {{ product.price }}
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>등록된 상품이 없습니다.</p>
+{% endif %}
+
+<div class="button-container" style="margin-top: 20px;">
+  <a href="{{ url_for('product_list') }}" class="view-more-btn">상품 더보기</a>
+  <a href="{{ url_for('new_product') }}" class="new-product-btn">새 상품 등록</a>
+</div>
+
+<h3>실시간 채팅</h3>
+<div id="chat" style="max-width: 600px; margin: 0 auto;">
+  <div id="messages" style="height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; background-color: #f9f9f9;"></div>
+  
+  <div style="background-color: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 4px;">
+    <div style="margin-bottom: 10px;">
+      <input id="chat_input" type="text" placeholder="메시지를 입력하세요" 
+             style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+    </div>
+    <div style="text-align: right;">
+      <button onclick="sendMessage()" 
+              style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">
+        전송
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .button-container {
+    display: flex;
+    gap: 10px;
+  }
+  .view-more-btn, .new-product-btn {
+    display: inline-block;
+    padding: 8px 16px;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    text-align: center;
+  }
+  .view-more-btn {
+    background-color: #4CAF50;
+  }
+  .view-more-btn:hover {
+    background-color: #45a049;
+  }
+  .new-product-btn {
+    background-color: #007bff;
+  }
+  .new-product-btn:hover {
+    background-color: #0056b3;
+  }
+</style>
+
+<script type="text/javascript">
+  var socket = io();
+  
+  socket.on('connect', function() {
+    console.log("채팅 서버에 연결됨");
+  });
+  
+  socket.on('message', function(data) {
+    var messages = document.getElementById('messages');
+    var messageDiv = document.createElement('div');
+    messageDiv.style.marginBottom = '10px';
+    messageDiv.style.padding = '10px';
+    messageDiv.style.backgroundColor = '#fff';
+    messageDiv.style.borderRadius = '4px';
+    messageDiv.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+    
+    var usernameSpan = document.createElement('span');
+    usernameSpan.style.fontWeight = 'bold';
+    usernameSpan.style.color = '#4CAF50';
+    usernameSpan.textContent = data.username + ': ';
+    
+    var messageSpan = document.createElement('span');
+    messageSpan.textContent = data.message;
+    
+    messageDiv.appendChild(usernameSpan);
+    messageDiv.appendChild(messageSpan);
+    messages.appendChild(messageDiv);
+    
+    messages.scrollTop = messages.scrollHeight;
+  });
+  
+  function sendMessage() {
+    var input = document.getElementById('chat_input');
+    var message = input.value.trim();
+    
+    if (message) {
+      socket.emit('send_message', {
+        username: "{{ user.username }}",
+        message: message
+      });
+      input.value = '';
+    }
+  }
+  
+  document.getElementById('chat_input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      sendMessage();
+    }
+  });
+</script>
+{% endblock %}
+

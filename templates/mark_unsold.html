@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}상품 판매 중{% endblock %}
+
+{% block content %}
+<h1>상품 판매 중</h1>
+<p>이 상품을 판매 중으로 표시하시겠습니까?</p>
+<form method="POST" action="{{ url_for('mark_as_unsold', product_id=product.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button type="submit">판매 중</button>
+    <a href="{{ url_for('my_products') }}">취소</a>
+</form>
+{% endblock %} 

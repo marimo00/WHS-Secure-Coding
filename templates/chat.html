@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}채팅{% endblock %}
+
+{% block content %}
+<h1>채팅</h1>
+<div id="messages">
+    {% for message in messages %}
+    <div>
+        <strong>{{ message.sender_name }}:</strong>
+        <p>{{ message.message }}</p>
+    </div>
+    {% endfor %}
+</div>
+<form method="POST" action="{{ url_for('chat_room', username=other_user.username) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div>
+        <label for="message">메시지:</label>
+        <input type="text" id="message" name="message" required>
+    </div>
+    <button type="submit">전송</button>
+</form>
+{% endblock %} 

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}새 상품 등록{% endblock %}
+{% block content %}
+<h1>새 상품 등록</h1>
+<form method="POST" action="{{ url_for('new_product') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div>
+        <label for="title">제목:</label>
+        <input type="text" id="title" name="title" required>
+    </div>
+    <div>
+        <label for="description">설명:</label>
+        <textarea id="description" name="description" required></textarea>
+    </div>
+    <div>
+        <label for="price">가격:</label>
+        <input type="number" id="price" name="price" required>
+    </div>
+    <button type="submit">상품 등록</button>
+</form>
+{% endblock %}

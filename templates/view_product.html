@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}{{ product.title }}{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="mb-0">{{ product.title }}</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>상품 ID:</strong> <span class="text-muted">{{ product.id }}</span></p>
+                    <p><strong>가격:</strong> {{ product.price }}원</p>
+                    <p><strong>판매자:</strong> 
+                        <a href="{{ url_for('view_user_profile', username=product.seller_username) }}">
+                            {{ product.seller_username }}
+                        </a>
+                    </p>
+                    <p><strong>등록일:</strong> {{ product.created_at }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h5>상품 설명</h5>
+                    <p>{{ product.description }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-custom btn-custom-secondary">
+                    <i class="fas fa-arrow-left"></i>목록으로
+                </a>
+                <div class="d-flex gap-3">
+                    {% if 'user_id' in session and product.seller_username != session.get('username') %}
+                    <a href="{{ url_for('chat_room', username=product.seller_username) }}" class="btn btn-custom btn-custom-primary me-3">
+                        <i class="fas fa-comments"></i>채팅
+                    </a>
+                    {% endif %}
+                    <button class="btn btn-custom btn-custom-danger" onclick="reportProduct('{{ product.id }}')">
+                        <i class="fas fa-exclamation-triangle"></i>신고하기
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function reportProduct(productId) {
+    window.location.href = `/report?target_type=product&target_id=${productId}`;
+}
+</script>
+{% endblock %}

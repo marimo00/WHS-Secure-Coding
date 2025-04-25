@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}홈{% endblock %}
+
+{% block content %}
+<h1>홈</h1>
+{% if session.user_id %}
+<p>환영합니다, {{ user.username }}님!</p>
+{% else %}
+<p>로그인하시면 더 많은 기능을 이용하실 수 있습니다.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block title %}관리자 페이지{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>관리자 페이지</h2>
+        <a href="{{ url_for('admin_reports') }}" class="btn btn-primary">
+            <i class="fas fa-exclamation-triangle"></i> 신고 목록
+        </a>
+    </div>
+    
+    <!-- 사용자 관리 -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h3>사용자 관리</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>사용자명</th>
+                            <th>가입일</th>
+                            <th>상태</th>
+                            <th>관리</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.created_at }}</td>
+                            <td>
+                                {% if user.is_banned %}
+                                <span class="badge bg-danger">차단됨</span>
+                                {% else %}
+                                <span class="badge bg-success">정상</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if not user.is_admin %}
+                                <form method="POST" action="{{ url_for('admin_toggle_ban', user_id=user.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        {% if user.is_banned %}
+                                        <i class="fas fa-unlock"></i> 차단 해제
+                                        {% else %}
+                                        <i class="fas fa-ban"></i> 차단
+                                        {% endif %}
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 상품 관리 -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h3>상품 관리</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>상품명</th>
+                            <th>가격</th>
+                            <th>판매자</th>
+                            <th>등록일</th>
+                            <th>관리</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                        <tr>
+                            <td>{{ product.title }}</td>
+                            <td>{{ product.price }}</td>
+                            <td>{{ product.seller_name }}</td>
+                            <td>{{ product.created_at }}</td>
+                            <td>
+                                <form method="POST" action="{{ url_for('admin_ban_product', product_id=product.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-ban"></i> 상품 차단
+                                    </button>
+                                </form>
+                                <form method="POST" action="{{ url_for('admin_delete_product', product_id=product.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i> 상품 삭제
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleBan(userId, isBanned) {
+    const action = isBanned === '1' ? '해제' : '차단';
+    if (confirm(`이 사용자를 ${action}하시겠습니까?`)) {
+        fetch(`/admin/toggle_ban/${userId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(`사용자가 ${action}되었습니다.`);
+                location.reload();
+            } else {
+                alert('오류가 발생했습니다.');
+            }
+        });
+    }
+}
+
+function deleteProduct(productId) {
+    if (confirm('이 상품을 삭제하시겠습니까?')) {
+        fetch(`/admin/delete_product/${productId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('상품이 삭제되었습니다.');
+                location.reload();
+            } else {
+                alert('오류가 발생했습니다.');
+            }
+        });
+    }
+}
+</script>
+{% endblock %} 

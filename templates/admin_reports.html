@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}관리자 - 신고 목록{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2>미처리 신고 목록</h2>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>신고자</th>
+                    <th>신고 대상</th>
+                    <th>신고 유형</th>
+                    <th>신고 사유</th>
+                    <th>신고 일시</th>
+                    <th>처리</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                <tr>
+                    <td>{{ report.reporter_name }}</td>
+                    <td>{{ report.target_name }}</td>
+                    <td>{{ report.target_type }}</td>
+                    <td>{{ report.reason }}</td>
+                    <td>{{ report.created_at }}</td>
+                    <td>
+                        {% if report.target_type == 'user' %}
+                        <button class="btn btn-danger btn-sm" onclick="banUser('{{ report.target_id }}')">
+                            <i class="fas fa-ban"></i> 사용자 차단
+                        </button>
+                        {% else %}
+                        <button class="btn btn-danger btn-sm" onclick="deleteProduct('{{ report.target_id }}')">
+                            <i class="fas fa-trash"></i> 상품 삭제
+                        </button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function banUser(userId) {
+    if (confirm('이 사용자를 차단하시겠습니까? 차단된 사용자는 더 이상 로그인할 수 없습니다.')) {
+        fetch(`/admin/ban_user/${userId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('사용자가 차단되었습니다.');
+                location.reload();
+            } else {
+                alert('오류가 발생했습니다.');
+            }
+        });
+    }
+}
+
+function deleteProduct(productId) {
+    if (confirm('이 상품을 삭제하시겠습니까?')) {
+        fetch(`/admin/delete_product/${productId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('상품이 삭제되었습니다.');
+                location.reload();
+            } else {
+                alert('오류가 발생했습니다.');
+            }
+        });
+    }
+}
+</script>
+{% endblock %} 

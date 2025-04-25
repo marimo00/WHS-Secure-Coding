@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block title %}내 상품 관리{% endblock %}
+{% block content %}
+<div class="container">
+    <h2>내 상품 관리</h2>
+    
+    {% if not products %}
+    <div class="no-products">
+        <p>등록된 상품이 없습니다.</p>
+        <a href="{{ url_for('new_product') }}" class="btn btn-custom btn-primary">새 상품 등록하기</a>
+    </div>
+    {% else %}
+    <div class="product-list">
+        {% for product in products %}
+        <div class="product-item">
+            <h3>{{ product.title }}</h3>
+            <p>{{ product.description }}</p>
+            <p>가격: {{ product.price|number_format }}원</p>
+            <p>등록일: {{ product.created_at }}</p>
+            {% if product.is_sold %}
+            <span class="badge bg-success">거래 완료</span>
+            {% else %}
+            <span class="badge bg-primary">판매 중</span>
+            {% endif %}
+            <div class="product-actions">
+                <a href="{{ url_for('edit_product', product_id=product.id) }}" class="btn btn-custom btn-edit">수정</a>
+                <form action="{{ url_for('delete_product', product_id=product.id) }}" method="POST" class="d-inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-custom btn-delete" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+                </form>
+                {% if not product.is_sold %}
+                <form action="{{ url_for('mark_as_sold', product_id=product.id) }}" method="POST" class="d-inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-custom btn-sold">거래 완료</button>
+                </form>
+                {% else %}
+                <form action="{{ url_for('mark_as_unsold', product_id=product.id) }}" method="POST" class="d-inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-custom btn-unsold">거래 취소</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.product-item {
+    border: 1px solid #e0e0e0;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+.product-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.btn-custom {
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: none;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-custom:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-edit {
+    background-color: #0d6efd;
+    margin: 0 0 20px;
+}
+
+.btn-edit:hover {
+    background-color: #0b5ed7;
+}
+
+.btn-delete {
+    background-color: #dc3545;
+}
+
+.btn-delete:hover {
+    background-color: #bb2d3b;
+}
+
+.btn-sold {
+    background-color: #198754;
+}
+
+.btn-sold:hover {
+    background-color: #157347;
+}
+
+.btn-unsold {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.btn-unsold:hover {
+    background-color: #ffca2c;
+    color: #000;
+}
+
+.no-products {
+    text-align: center;
+    padding: 40px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.no-products p {
+    margin-bottom: 20px;
+    color: #6c757d;
+    font-size: 1.1em;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: white;
+}
+</style>
+{% endblock %} 
