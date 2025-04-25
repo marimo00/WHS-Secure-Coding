@@ -28,7 +28,7 @@ conda env create -f environments.yaml     #필요한 패키지 설치
 conda activate
 ```
 
-# 실행 방법
+## 실행 방법
 ```bash
 python3 app.py
 ```
