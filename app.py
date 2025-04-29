@@ -274,16 +274,6 @@ def init_db():
             )
         """)
         
-        # 관리자 테스트 계정 생성
-        cursor.execute("SELECT * FROM user WHERE username = 'admin'")
-        if not cursor.fetchone():
-            admin_id = str(uuid.uuid4())
-            admin_password = bcrypt.hashpw('Admin123!@#'.encode('utf-8'), bcrypt.gensalt())
-            cursor.execute("""
-                INSERT INTO user (id, username, password, is_admin, balance, account_number)
-                VALUES (?, ?, ?, 1, 1000000, '000-000000-00-000')
-            """, (admin_id, 'admin', admin_password))
-        
         db.commit()
 
 # 기본 라우트
@@ -1151,5 +1141,5 @@ def mark_as_unsold(product_id):
 
 if __name__ == '__main__':
     init_db()  # 데이터베이스 초기화
-    socketio.run(app, debug=True)
+    socketio.run(app)
 
